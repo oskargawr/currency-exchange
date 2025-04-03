@@ -20,8 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qdzp-c6af8+8-5m$7-rn52n00qjz-imbitxli+rfn%uk55c#r7'
+from dotenv import load_dotenv
+import os
 
+load_dotenv(dotenv_path='.env')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -75,8 +78,12 @@ WSGI_APPLICATION = 'CurrencyExchange.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'currency_exchange'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
