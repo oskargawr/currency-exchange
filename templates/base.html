@@ -9,7 +9,9 @@
         <div class="container">
             <a class="navbar-brand" href="/">Currency Exchange</a>
             <div class="navbar-nav">
+                <a class="nav-link" href="{% url 'currencies:currency_list' %}">Currencies</a>
                 {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'currencies:favorites' %}">Favorites</a>
                     <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                     <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
                     {% csrf_token %}

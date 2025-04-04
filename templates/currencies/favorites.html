@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Your Favorite Currencies</h1>
+
+{% if favorites %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Base</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for favorite in favorites %}
+        <tr>
+            <td><a href="{% url 'currencies:detail' favorite.currency.base %}">{{ favorite.currency.base }}</a></td>
+            <td>{{ favorite.currency.name }}</td>
+            <td>
+                <form action="{% url 'currencies:remove_favorite' favorite.currency.base %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>You haven't added any currencies to your favorites yet.</p>
+{% endif %}
+
+<a href="{% url 'currencies:currency_list' %}" class="btn btn-secondary">Back to List</a>
+{% endblock %}

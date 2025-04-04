@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Currency List</h1>
+
+{% if user.is_authenticated %}
+<div class="mb-3">
+    <a href="{% url 'currencies:favorites' %}" class="btn btn-primary">
+        View Favorites
+    </a>
+</div>
+{% endif %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Symbol</th>
+            {% if user.is_authenticated %}
+            <th>Actions</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for currency in currencies %}
+        <tr>
+            <td>{{ currency.base }}</td>
+            <td>{{ currency.name }}</td>
+            <td>{{ currency.symbol }}</td>
+            {% if user.is_authenticated %}
+            <td>
+                <form action="{% url 'currencies:add_favorite' currency.base %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-success">Add to Favorites</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
