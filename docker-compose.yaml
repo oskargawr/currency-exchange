@@ -1,28 +1,31 @@
 services:
   web:
     build: .
-    command: python manage.py runserver
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     volumes:
       - .:/code
     env_file:
       - .env
+    environment:
+      - PRE_COMMIT_HOME=/tmp/pre-commit-cache
+      - IS_DOCKER=TRUE
     depends_on:
       - db
       - redis
 
   db:
-    image: postgres:latest
+    image: postgres:15-alpine
     env_file:
       - .env
     ports:
       - "5432:5432"
 
-#  redis:
-#    image: redis:latest
-#    ports:
-#      - "6379:6379"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
 #
 #  celery:
 #    build: .

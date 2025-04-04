@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-from dotenv import load_dotenv
-import os
 
-load_dotenv(dotenv_path='.env')
+
+load_dotenv(dotenv_path='../.env')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -75,6 +76,7 @@ WSGI_APPLICATION = 'CurrencyExchange.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+is_docker = os.getenv('IS_DOCKER', 'False').lower() == 'true'
 
 DATABASES = {
     'default': {
@@ -82,7 +84,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', 'currency_exchange'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': 'db',
+        'HOST': 'db' if is_docker else 'localhost',
         'PORT': '5432',
     }
 }
