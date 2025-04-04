@@ -1,57 +1,86 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ currency.base }} - {{ currency.name }}</h1>
-
-<div class="mt-4">
-    <h3>Exchange Rate History (Last 7 Days)</h3>
-    <canvas id="rateChart" width="400" height="200"></canvas>
+<div class="flex items-center gap-4 mb-8">
+    <button onclick="window.history.back()" class="btn btn-circle btn-outline">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+    </button>
+    <h1 class="text-3xl font-bold">{{ currency.base }} - {{ currency.name }}</h1>
 </div>
 
-<table class="table mt-4">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Rate (USD to {{ currency.base }})</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for rate in rates %}
-        <tr>
-            <td>{{ rate.date }}</td>
-            <td>{{ rate.rate }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="card bg-base-100 shadow-xl mb-8">
+    <div class="card-body">
+        <h2 class="card-title">Exchange Rate History (Last 7 Days)</h2>
+        <div class="w-full h-96">
+            <canvas id="rateChart"></canvas>
+        </div>
+    </div>
+</div>
 
-<a href="{% url 'currencies:currency_list' %}" class="btn btn-secondary">Back to List</a>
-
+<div class="overflow-x-auto">
+    <table class="table table-zebra">
+        <thead>
+            <tr class="text-lg">
+                <th>Date</th>
+                <th class="text-right">Rate (USD to {{ currency.base }})</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rate in rates %}
+            <tr class="hover">
+                <td>{{ rate.date|date:"M d, Y" }}</td>
+                <td class="text-right font-mono">{{ rate.rate|floatformat:6 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('rateChart').getContext('2d');
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [{% for rate in rates %}"{{ rate.date|date:'Y-m-d' }}",{% endfor %}],
-            datasets: [{
-                label: 'USD to {{ currency.base }}',
-                data: [{% for rate in rates %}{{ rate.rate }},{% endfor %}],
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: false
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('rateChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [{% for rate in rates %}"{{ rate.date|date:'M d' }}",{% endfor %}],
+                datasets: [{
+                    label: 'USD to {{ currency.base }}',
+                    data: [{% for rate in rates %}{{ rate.rate }},{% endfor %}],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `1 USD = ${context.parsed.y} ${'{{ currency.base }}'}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(4);
+                            }
+                        }
+                    }
                 }
             }
-        }
+        });
     });
 </script>
 {% endblock %}

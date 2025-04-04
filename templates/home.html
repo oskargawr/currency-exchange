@@ -1,10 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Welcome to Currency Exchange</h1>
-{% if user.is_authenticated %}
-<p>Hello, {{ user.username }}!</p>
-{% else %}
-<p>Please login or register to access all features.</p>
-{% endif %}
+<div class="hero">
+    <div class="hero-content text-center">
+        <div class="max-w-md">
+            <h1 class="text-5xl font-bold">Currency Exchange</h1>
+            <p class="py-6 text-lg">
+                Track exchange rates, manage your favorite currencies, and analyze historical trends
+            </p>
+            {% if user.is_authenticated %}
+            <div class="flex justify-center gap-4">
+                <a href="{% url 'currencies:currency_list' %}" class="btn btn-primary">View Currencies</a>
+                <a href="{% url 'currencies:favorites' %}" class="btn btn-outline">Your Favorites</a>
+            </div>
+            {% else %}
+            <div class="flex justify-center gap-4">
+                <a href="{% url 'login' %}" class="btn btn-primary">Get Started</a>
+                <a href="{% url 'register' %}" class="btn btn-outline">Create Account</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

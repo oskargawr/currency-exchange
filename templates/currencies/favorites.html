@@ -1,35 +1,59 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Your Favorite Currencies</h1>
+<div class="flex items-center gap-4 mb-8">
+    <button onclick="window.history.back()" class="btn btn-circle btn-outline">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+    </button>
+    <h1 class="text-3xl font-bold">Your Favorite Currencies</h1>
+</div>
 
 {% if favorites %}
-<table class="table">
-    <thead>
-        <tr>
-            <th>Base</th>
-            <th>Name</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for favorite in favorites %}
-        <tr>
-            <td><a href="{% url 'currencies:detail' favorite.currency.base %}">{{ favorite.currency.base }}</a></td>
-            <td>{{ favorite.currency.name }}</td>
-            <td>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for favorite in favorites %}
+    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+        <div class="card-body">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="card-title text-2xl">
+                        {{ favorite.currency.base }}
+                        <span class="text-xl ml-2">{{ favorite.currency.symbol }}</span>
+                    </h2>
+                    <p>{{ favorite.currency.name }}</p>
+                </div>
+                <div class="badge badge-primary badge-lg p-4">
+                    {{ favorite.currency.base }}/USD
+                </div>
+            </div>
+            <div class="card-actions justify-end mt-4">
+                <a href="{% url 'currencies:detail' favorite.currency.base %}" class="btn btn-sm btn-outline">
+                    View Details
+                </a>
                 <form action="{% url 'currencies:remove_favorite' favorite.currency.base %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                    <button type="submit" class="btn btn-sm btn-error">
+                        Remove
+                    </button>
                 </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% else %}
-<p>You haven't added any currencies to your favorites yet.</p>
+<div class="hero bg-white/30 rounded-lg">
+    <div class="hero-content text-center">
+        <div class="max-w-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <h2 class="text-xl font-bold mt-4">No favorites yet</h2>
+            <p class="py-4">You haven't added any currencies to your favorites yet.</p>
+            <a href="{% url 'currencies:currency_list' %}" class="btn btn-primary">Browse Currencies</a>
+        </div>
+    </div>
+</div>
 {% endif %}
-
-<a href="{% url 'currencies:currency_list' %}" class="btn btn-secondary">Back to List</a>
 {% endblock %}
