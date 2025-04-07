@@ -2,6 +2,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+from django.contrib import messages
 
 
 def register(request):
@@ -11,6 +12,10 @@ def register(request):
             user = form.save()
             login(request, user)
             return redirect('home')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
