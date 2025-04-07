@@ -26,7 +26,8 @@ def favorite_currencies(request):
 @login_required
 def add_favorite(request, base):
     currency = get_object_or_404(Currency, base=base)
-    print(currency)
+    logger = logging.getLogger(__name__)
+    logger.debug(currency)
     if not FavouriteCurrency.objects.filter(user=request.user, currency=currency).exists():
         FavouriteCurrency.objects.create(user=request.user, currency=currency)
     return redirect('currencies:currency_list')
