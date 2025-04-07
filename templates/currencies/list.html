@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold">Currency Rates</h1>
+    {% if user.is_authenticated %}
+    <a href="{% url 'currencies:favorites' %}" class="btn btn-sm btn-primary rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        View Favorites
+    </a>
+    {% endif %}
+</div>
+
+<div class="overflow-x-auto rounded-lg border border-base-200 shadow-sm">
+    <table class="table bg-white/50">
+        <thead class="bg-base-100">
+            <tr>
+                <th class="text-base font-semibold">Base</th>
+                <th class="text-base font-semibold">Currency</th>
+                <th class="text-base font-semibold">Symbol</th>
+                {% if user.is_authenticated %}
+                <th class="text-right text-base font-semibold">Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for currency in currencies %}
+            <tr class="hover:bg-base-100 transition-colors duration-150">
+                <td class="font-medium text-primary tooltip tooltip-right" data-tip="Click to view details">
+                    <a href="{% url 'currencies:detail' currency.base %}" class="hover:text-primary-focus">
+                    {{ currency.base }}
+                </a>
+                </td>
+                <td class="text-base-content/90">{{ currency.name }}</td>
+                <td class="text font-bold">{{ currency.symbol }}</td>
+                {% if user.is_authenticated %}
+                <td class="text-right">
+                    <form action="{% url 'currencies:add_favorite' currency.base %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline btn-xs btn-primary hover:btn-success/80">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add
+                        </button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

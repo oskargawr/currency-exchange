@@ -1,10 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Register</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Register</button>
-</form>
+<div class="hero py-12 bg-white/30 br-50 rounded-md">
+    <div class="hero-content flex-col lg:flex-row-reverse">
+        <div class="text-center lg:text-left lg:pl-12">
+            <h1 class="text-5xl font-bold">Create account!</h1>
+            <p class="py-6">Join our currency exchange platform to track rates and manage favorites.</p>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <div class="card-body">
+                {% if messages %}
+                <div class="alert alert-error mb-4">
+                    <ul>
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Username</span>
+                        </label>
+                        <input type="text" name="username" placeholder="username" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Password</span>
+                        </label>
+                        <input type="password" name="password1" placeholder="password" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Confirm Password</span>
+                        </label>
+                        <input type="password" name="password2" placeholder="confirm password" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control mt-6">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+                <div class="divider">OR</div>
+                <a href="{% url 'login' %}" class="btn btn-outline w-full">Login to existing account</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,7 +1,57 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Profile</h2>
-<p>Welcome, {{ user.username }}!</p>
-<!--<a href="{% url 'logout' %}">Logout</a>-->
+<div class="max-w-2xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="avatar placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-full w-16">
+                        <span class="text-2xl">{{ user.username|first|upper }}</span>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="card-title text-2xl">{{ user.username }}</h1>
+                    <p class="text-sm opacity-70">Member since {{ user.date_joined|date:"F Y" }}</p>
+                </div>
+            </div>
+
+            <div class="card-actions justify-around gap-4">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('change_password').showModal()">
+                    Change Password
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="document.getElementById('change_username').showModal()">
+                    Change Username
+                </button>
+                <a href="{% url 'currencies:favorites' %}" class="btn btn-accent btn-sm">
+                    View Favorites
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<dialog id="change_password" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Change Password</h3>
+        <p class="py-4">Password change functionality coming soon!</p>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+<dialog id="change_username" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Change Username</h3>
+        <p class="py-4">Username change functionality coming soon!</p>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>
 {% endblock %}

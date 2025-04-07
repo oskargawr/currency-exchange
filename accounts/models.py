@@ -4,7 +4,7 @@ from django.db import models
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # favourite_currencies = models.ManyToManyField('currencies.Currency', blank=True)
+    favourite_currencies = models.ManyToManyField('currencies.Currency', blank=True)
 
     def __str__(self):
         return f'{self.user.username} Profile'

@@ -1,10 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
-</form>
+<div class="hero py-12 bg-white/30 br-50 rounded-md">
+    <div class="hero-content flex-col lg:flex-row-reverse">
+        <div class="text-center lg:text-left lg:pl-12">
+            <h1 class="text-5xl font-bold">Login now!</h1>
+            <p class="py-6">Access your currency exchange dashboard and manage your favorite currencies.</p>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Username</span>
+                        </label>
+                        <input type="text" name="username" placeholder="username" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Password</span>
+                        </label>
+                        <input type="password" name="password" placeholder="password" class="input input-bordered" required>
+                    </div>
+                    <div class="form-control mt-6">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+                <div class="divider">OR</div>
+                <a href="{% url 'register' %}" class="btn btn-outline w-full">Create new account</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
