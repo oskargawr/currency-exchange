@@ -1,8 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.management import call_command
+from django.db import models
 from django.shortcuts import render, get_object_or_404, redirect
-
 from currencies.models import Currency, ExchangeRate, FavouriteCurrency
 
 
@@ -48,3 +48,16 @@ def fetch_latest_rates(request):
     except Exception as e:
         messages.error(request, f'Error fetching rates: {str(e)}')
         return redirect('currencies:currency_list')
+
+
+def search_currencies(request):
+    query = request.GET.get('q', '').strip()
+
+    if query:
+        currencies = Currency.objects.filter(
+            models.Q(base__icontains=query) | models.Q(name__icontains=query) | models.Q(symbol__icontains=query)
+        ).order_by('base')
+    else:
+        currencies = Currency.objects.all().order_by('base')
+
+    return render(request, 'currencies/currency_rows.html', {'currencies': currencies})

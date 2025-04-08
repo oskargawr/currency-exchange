@@ -3,19 +3,35 @@
 {% block content %}
 <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold">Currency Rates</h1>
+    <label class="input flex items-center gap-2 input-sm rounded-lg hidden lg:flex">
+        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+        <input
+                type="search"
+                class="grow"
+                placeholder="Search..."
+                hx-get="{% url 'currencies:search_currencies' %}"
+                hx-trigger="keyup changed delay:300ms, search"
+                hx-target="#currency-table-body"
+                hx-include="this"
+                name="q"
+        />
+         <kbd class="kbd kbd-sm text-xs">⌘</kbd>
+        <kbd class="kbd kbd-sm text-xs">K</kbd>
+    </label>
     {% if user.is_authenticated %}
     <div class="items-right flex gap-2">
-        <a href="{% url 'currencies:fetch_latest_rates' %}" class="btn btn-outline btn-sm btn-secondary rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5 mr-2">
+        <a href="{% url 'currencies:fetch_latest_rates' %}" class="btn btn-outline btn-sm btn-neutral rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5 sm:mr-2 mr-0">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
         </svg>
-        Fetch latest
+        <span class="hidden sm:inline">Fetch Latest</span>
+
     </a>
         <a href="{% url 'currencies:favorites' %}" class="btn btn-sm btn-primary rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:mr-2 mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
-        View Favorites
+        <span class="hidden sm:inline">View Favorites</span>
     </a>
     </div>
     {% endif %}
@@ -33,34 +49,33 @@
                 {% endif %}
             </tr>
         </thead>
-
-        <tbody>
-            {% for currency in currencies %}
-            <tr class="hover:bg-base-100 transition-colors duration-150">
-                <td class="font-medium text-primary tooltip tooltip-right" data-tip="Click to view details">
-                    <a href="{% url 'currencies:detail' currency.base %}" class="hover:text-primary-focus">
-                    {{ currency.base }}
-                </a>
-                </td>
-                <td class="text-base-content/90">{{ currency.name }}</td>
-                <td class="text font-bold">{{ currency.symbol }}</td>
-                {% if user.is_authenticated %}
-                <td class="text-right">
-                    <form action="{% url 'currencies:add_favorite' currency.base %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline btn-xs btn-primary hover:btn-success/80">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Add
-                        </button>
-                    </form>
-                </td>
-                {% endif %}
-            </tr>
-            {% endfor %}
+        <tbody id="currency-table-body">
+            {% include 'currencies/currency_rows.html' %}
         </tbody>
     </table>
 </div>
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[type="search"]');
+
+    document.addEventListener('keydown', function(e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                htmx.trigger(this, 'search');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
 
 {% endblock %}
