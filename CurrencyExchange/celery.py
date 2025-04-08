@@ -26,6 +26,8 @@ def debug_task(self):
 app.conf.beat_schedule = {
     'fetch-daily-rates': {
         'task': 'currencies.tasks.fetch_exchange_rates',
-        'schedule': crontab(minute='*'),
+        # 'schedule': crontab(minute='*'), # every minute
+        # 'schedule': crontab(hour='*', minute='0'), # every hour
+        'schedule': crontab(hour='16', minute='0'),  # every day at 16:00 UTC
     },
 }

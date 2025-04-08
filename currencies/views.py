@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.management import call_command
 from django.shortcuts import render, get_object_or_404, redirect
-
 
 from currencies.models import Currency, ExchangeRate, FavouriteCurrency
 
@@ -37,3 +37,14 @@ def remove_favorite(request, base):
     request.user.favourite_currencies.filter(currency=currency).delete()
     messages.success(request, f"{currency.base} removed from favorites")
     return redirect('currencies:favorites')
+
+
+@login_required
+def fetch_latest_rates(request):
+    try:
+        call_command('fetch_rates')
+        messages.success(request, 'Successfully fetched latest rates')
+        return redirect('currencies:currency_list')
+    except Exception as e:
+        messages.error(request, f'Error fetching rates: {str(e)}')
+        return redirect('currencies:currency_list')
