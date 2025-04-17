@@ -88,15 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             scales: {
                 x: {
-                    grid: {
-                        display: false
-                    },
                     ticks: {
                         color: '#6b7280'
                     }
                 },
                 y: {
-                    beginAtZero: false,
                     suggestedMin: Math.min(...dataPoints) * 0.995,
                     suggestedMax: Math.max(...dataPoints) * 1.005,
                     grid: {

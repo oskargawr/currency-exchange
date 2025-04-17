@@ -21,4 +21,38 @@
     </td>
     {% endif %}
 </tr>
+{% empty %}
+<tr>
+    <td colspan="4" class="text-center py-4">No currencies found</td>
+</tr>
 {% endfor %}
+
+{% if not request.GET.q and page_obj and page_obj.paginator.num_pages > 1 %}
+<tr id="pagination-row">
+    <td colspan="4">
+        <div class="flex justify-center mt-4">
+            <div class="join">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="join-item btn btn-sm">«</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn btn-sm">‹</a>
+                {% else %}
+                    <button class="join-item btn btn-sm" disabled>«</button>
+                    <button class="join-item btn btn-sm" disabled>‹</button>
+                {% endif %}
+
+                <button class="join-item btn btn-sm">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </button>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="join-item btn btn-sm">›</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="join-item btn btn-sm">»</a>
+                {% else %}
+                    <button class="join-item btn btn-sm" disabled>›</button>
+                    <button class="join-item btn btn-sm" disabled>»</button>
+                {% endif %}
+            </div>
+        </div>
+    </td>
+</tr>
+{% endif %}
