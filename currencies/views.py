@@ -1,10 +1,16 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.management import call_command
 from django.db import models
+from django.db.models import Avg
+from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from currencies.models import Currency, ExchangeRate, FavouriteCurrency
 from django.core.paginator import Paginator
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 def currency_list(request):
@@ -99,3 +105,32 @@ def search_currencies(request):
             "request": request,
         },
     )
+
+
+@api_view(["GET"])
+def median_rates(request):
+    thirty_days_ago = timezone.now().date() - timedelta(days=30)
+
+    currencies = Currency.objects.all()
+
+    results = []
+    for currency in currencies:
+        rates = (
+            ExchangeRate.objects.filter(currency=currency, date__gte=thirty_days_ago)
+            .values("date")
+            .annotate(median_rate=Avg("rate"))
+            .order_by("date")
+        )
+
+        currency_data = {
+            "base": currency.base,
+            "name": currency.name,
+            "symbol": currency.symbol,
+            "rates": [
+                {"date": rate["date"], "median_rate": float(rate["median_rate"])}
+                for rate in rates
+            ],
+        }
+        results.append(currency_data)
+
+    return Response(results)

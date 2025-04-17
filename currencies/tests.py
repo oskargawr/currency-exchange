@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -54,3 +56,37 @@ class CurrencyTestCase(TestCase):
         self.assertFalse(
             FavouriteCurrency.objects.filter(user=self.user, currency=self.usd).exists()
         )
+
+
+class MedianRatesAPITest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        ExchangeRate.objects.all().delete()
+        Currency.objects.all().delete()
+        cls.usd = Currency.objects.create(base="USD", name="US Dollar")
+        cls.eur = Currency.objects.create(base="EUR", name="Euro")
+
+        today = date.today()
+        for i in range(30):
+            rate_date = today - timedelta(days=i)
+            ExchangeRate.objects.create(
+                currency=cls.usd, date=rate_date, rate=1.0 + (i * 0.01)
+            )
+            ExchangeRate.objects.create(
+                currency=cls.eur, date=rate_date, rate=0.9 + (i * 0.01)
+            )
+
+    def test_median_rates_api(self):
+        url = reverse("currencies:median_rates")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        usd_data = next(item for item in response.data if item["base"] == "USD")
+        self.assertEqual(len(usd_data["rates"]), 30)
+
+        first_day_rate = usd_data["rates"][0]["median_rate"]
+        last_day_rate = usd_data["rates"][-1]["median_rate"]
+        self.assertAlmostEqual(first_day_rate, 1.29, places=2)
+        self.assertAlmostEqual(last_day_rate, 1.0, places=2)
