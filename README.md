@@ -68,6 +68,4 @@ Replace the `EXCHANGE_RATE_API_KEY` value in `.env` with your actual API key.
 
 | Endpoint              | Description                        |
 |-----------------------|------------------------------------|
-| `/api/rates/`         | Get current exchange rates        |
-| `/api/rates/history/` | Get 30-day historical rates       |
 | `/api/rates/median/`  | Get median rates for last 30 days |
