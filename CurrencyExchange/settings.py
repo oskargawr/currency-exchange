@@ -144,8 +144,11 @@ STATICFILES_DIRS = (BASE_DIR / "static",)
 INSTALLED_APPS += ["flake8"]
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+# CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_BROKER_URL = "redis://redis:6379" if not is_docker else "redis://localhost:6379"
+CELERY_RESULT_BACKEND = (
+    "redis://redis:6379" if not is_docker else "redis://localhost:6379"
+)
 
 EXCHANGE_RATE_API_KEY = os.getenv("EXCHANGE_RATE_API_KEY", "default-secret-key")
 EXCHANGERATE_API_URL = os.getenv(
