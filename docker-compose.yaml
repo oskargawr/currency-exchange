@@ -27,31 +27,24 @@ services:
     ports:
       - "6379:6379"
 
-  redis-commander:
-    image: redis-commander
-    ports:
-      - "8081:8081"
-    environment:
-      - REDIS_HOSTS=local:redis:6379
+  celery:
+    build: .
+    command: celery -A CurrencyExchange worker -l info
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
 
-#  celery:
-#    build: .
-#    command: celery -A CurrencyExchange worker -l info
-#    env_file:
-#      - .env
-#    volumes:
-#      - .:/code
-#    depends_on:
-#      - db
-#      - redis
-#
-#  celery-beat:
-#    build: .
-#    command: celery -A CurrencyExchange beat -l info
-#    env_file:
-#      - .env
-#    volumes:
-#      - .:/code
-#    depends_on:
-#      - db
-#      - redis
+  celery-beat:
+    build: .
+    command: celery -A CurrencyExchange beat -l info
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
