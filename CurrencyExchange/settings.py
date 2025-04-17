@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 
 
-load_dotenv(dotenv_path='../.env')
+load_dotenv(dotenv_path=BASE_DIR / '.env')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -145,3 +145,9 @@ STATICFILES_DIRS = (
 
 INSTALLED_APPS += ['flake8']
 TEST_RUNNER = 'flake8.main.Flake8TestRunner'
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+EXCHANGE_RATE_API_KEY = os.getenv('EXCHANGE_RATE_API_KEY', 'default-secret-key')
+EXCHANGERATE_API_URL = os.getenv('EXCHANGERATE_API_URL', 'https://v6.exchangerate-api.com/v6/')

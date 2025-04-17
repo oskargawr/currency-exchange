@@ -13,23 +13,23 @@
 <div class="card bg-base-100 shadow-xl mb-8">
     <div class="card-body">
         <h2 class="card-title">Exchange Rate History (Last 7 Days)</h2>
-        <div class="w-full h-96">
+        <div class="w-full h-80 lg:h-96">
             <canvas id="rateChart"></canvas>
         </div>
     </div>
 </div>
 
-<div class="overflow-x-auto">
-    <table class="table table-zebra">
-        <thead>
+<div class="overflow-x-auto rounded-lg">
+    <table class="table bg-white/50">
+        <thead class="bg-base-100">
             <tr class="text-lg">
-                <th>Date</th>
-                <th class="text-right">Rate (USD to {{ currency.base }})</th>
+                <th class="text-base font-semibold">Date</th>
+                <th class="text-right text-base font-semibold">Rate (USD to {{ currency.base }})</th>
             </tr>
         </thead>
         <tbody>
             {% for rate in rates %}
-            <tr class="hover">
+            <tr class="hover:bg-stone-100/70 transition-colors duration-150">
                 <td>{{ rate.date|date:"M d, Y" }}</td>
                 <td class="text-right font-mono">{{ rate.rate|floatformat:6 }}</td>
             </tr>
@@ -40,47 +40,78 @@
 {% endblock %}
 
 {% block scripts %}
-<!--<script>-->
-<!--    document.addEventListener('DOMContentLoaded', function() {-->
-<!--        const ctx = document.getElementById('rateChart').getContext('2d');-->
-<!--        const chart = new Chart(ctx, {-->
-<!--            type: 'line',-->
-<!--            data: {-->
-<!--                labels: [{% for rate in rates %}"{{ rate.date|date:'M d' }}",{% endfor %}],-->
-<!--                datasets: [{-->
-<!--                    label: 'USD to {{ currency.base }}',-->
-<!--                    data: [{% for rate in rates %}{{ rate.rate }},{% endfor %}],-->
-<!--                    borderColor: '#3b82f6',-->
-<!--                    backgroundColor: 'rgba(59, 130, 246, 0.05)',-->
-<!--                    borderWidth: 2,-->
-<!--                    tension: 0.1,-->
-<!--                    fill: true-->
-<!--                }]-->
-<!--            },-->
-<!--            options: {-->
-<!--                responsive: true,-->
-<!--                maintainAspectRatio: false,-->
-<!--                plugins: {-->
-<!--                    tooltip: {-->
-<!--                        callbacks: {-->
-<!--                            label: function(context) {-->
-<!--                                return `1 USD = ${context.parsed.y} ${'{{ currency.base }}'}`;-->
-<!--                            }-->
-<!--                        }-->
-<!--                    }-->
-<!--                },-->
-<!--                scales: {-->
-<!--                    y: {-->
-<!--                        beginAtZero: false,-->
-<!--                        ticks: {-->
-<!--                            callback: function(value) {-->
-<!--                                return value.toFixed(4);-->
-<!--                            }-->
-<!--                        }-->
-<!--                    }-->
-<!--                }-->
-<!--            }-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('rateChart').getContext('2d');
+
+    const labels = [{% for rate in rates reversed %}"{{ rate.date|date:'M j' }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+    const dataPoints = [{% for rate in rates reversed %}{{ rate.rate }}{% if not forloop.last %},{% endif %}{% endfor %}];
+    //
+    // console.log("Labels:", labels);
+    // console.log("Data Points:", dataPoints);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'USD to {{ currency.base }}',
+                data: dataPoints,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                borderWidth: 2,
+                tension: 0.1,
+                fill: true,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#3b82f6',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `1 USD = ${context.parsed.y.toFixed(6)} {{ currency.base }}`;
+                        }
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#6b7280'
+                    }
+                },
+                y: {
+                    suggestedMin: Math.min(...dataPoints) * 0.995,
+                    suggestedMax: Math.max(...dataPoints) * 1.005,
+                    grid: {
+                        color: 'rgba(229, 231, 235, 0.5)'
+                    },
+                    ticks: {
+                        color: '#6b7280',
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

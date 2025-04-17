@@ -1,0 +1,58 @@
+{% for currency in currencies %}
+<tr class="hover:bg-stone-100/70 transition-colors duration-150">
+    <td class="font-medium text-primary tooltip tooltip-right" data-tip="Click to view details">
+        <a href="{% url 'currencies:detail' currency.base %}" class="hover:text-primary-focus">
+            {{ currency.base }}
+        </a>
+    </td>
+    <td class="text-base-content/90">{{ currency.name }}</td>
+    <td class="text font-bold">{{ currency.symbol }}</td>
+    {% if user.is_authenticated %}
+    <td class="text-right">
+        <form action="{% url 'currencies:add_favorite' currency.base %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline btn-xs btn-primary hover:btn-success/80">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:mr-1 mr-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="hidden sm:inline">Add</span>
+            </button>
+        </form>
+    </td>
+    {% endif %}
+</tr>
+{% empty %}
+<tr>
+    <td colspan="4" class="text-center py-4">No currencies found</td>
+</tr>
+{% endfor %}
+
+{% if not request.GET.q and page_obj and page_obj.paginator.num_pages > 1 %}
+<tr id="pagination-row">
+    <td colspan="4">
+        <div class="flex justify-center mt-4">
+            <div class="join">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="join-item btn btn-sm">«</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn btn-sm">‹</a>
+                {% else %}
+                    <button class="join-item btn btn-sm" disabled>«</button>
+                    <button class="join-item btn btn-sm" disabled>‹</button>
+                {% endif %}
+
+                <button class="join-item btn btn-sm">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </button>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="join-item btn btn-sm">›</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="join-item btn btn-sm">»</a>
+                {% else %}
+                    <button class="join-item btn btn-sm" disabled>›</button>
+                    <button class="join-item btn btn-sm" disabled>»</button>
+                {% endif %}
+            </div>
+        </div>
+    </td>
+</tr>
+{% endif %}
